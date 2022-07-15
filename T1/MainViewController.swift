@@ -37,7 +37,7 @@ class MainViewController: UIViewController {
 class ColorDataService {
     var repository = ColorDataRepository()
     
-    func getData() -> PresetableAppData {
+    func getData() -> PresentableAppData {
         return repository.getData()
     }
 }
@@ -45,7 +45,7 @@ class ColorDataService {
 class ColorDataRepository {
     var httpClient: HTTPClient = AssetsProvider.httpClient
     
-    func getData() -> PresetableAppData {
+    func getData() -> PresentableAppData {
         let data = httpClient.getData(fromUrl: AppURLS.url(forEndpoint: AppURLS.EndPoints.colorData) )
         
         do {
@@ -56,7 +56,7 @@ class ColorDataRepository {
             return parsed.toPresentable() }
         catch {
             //handle parse error
-            return PresetableAppData.identity()
+            return PresentableAppData.identity()
         }
     }
 }
@@ -99,7 +99,7 @@ struct AppData: Decodable {
     let title: String
     let colors: ColorData
     
-    func toPresentable() -> PresetableAppData {
+    func toPresentable() -> PresentableAppData {
         let backgroundColors = colors.backgroundColors.map { hexString in
             UIColor.fromHexString(hex: hexString)
         }
@@ -108,16 +108,16 @@ struct AppData: Decodable {
             UIColor.fromHexString(hex: hexString)
         }
         
-        return PresetableAppData(title: title, backgroundColors: backgroundColors, textColors: textColors)
+        return PresentableAppData(title: title, backgroundColors: backgroundColors, textColors: textColors)
     }
 }
 
-struct PresetableAppData {
+struct PresentableAppData {
     let title: String
     let backgroundColors: [UIColor]
     let textColors: [UIColor]
     
-    static func fromAppData(data: AppData) -> PresetableAppData {
+    static func fromAppData(data: AppData) -> PresentableAppData {
         let backgroundColors = data.colors.backgroundColors.map { hexString in
             UIColor.fromHexString(hex: hexString)
         }
@@ -126,11 +126,11 @@ struct PresetableAppData {
             UIColor.fromHexString(hex: hexString)
         }
         
-        return PresetableAppData(title: data.title, backgroundColors: backgroundColors, textColors: textColors)
+        return PresentableAppData(title: data.title, backgroundColors: backgroundColors, textColors: textColors)
     }
     
-    static func identity() -> PresetableAppData {
-        return PresetableAppData(title: "", backgroundColors: [], textColors: [])
+    static func identity() -> PresentableAppData {
+        return PresentableAppData(title: "", backgroundColors: [], textColors: [])
     }
 }
 
