@@ -15,9 +15,56 @@ class MainViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .yellow
         let spinner = generateSpinner()
-        let data = service.getData()
-        view.backgroundColor = data.backgroundColors[3]
-        print("\(data)")
+        service.getData { data in
+            view.backgroundColor = data.backgroundColors[3]
+            print("\(data)")
+            spinner.stopAnimating()
+            setupUI()
+        }
+    }
+    
+    private func setupUI() {
+        let button1 = generateButton(text: "Change text color".localize())
+        let button2 = generateButton(text: "Change backgorundColor".localize())
+        
+        let buttonContainer = UIView()
+        buttonContainer.backgroundColor = .cyan
+        let titleLabel = UILabel()
+        titleLabel.text = "TITLE"
+        
+        view.addSubview(buttonContainer)
+        view.addSubview(titleLabel)
+        
+        buttonContainer.addSubview(button1)
+        buttonContainer.addSubview(button2)
+        
+        buttonContainer.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+            make.top.equalTo(button1.snp.top).offset(-10)
+            make.bottom.equalTo(button2.snp.bottom).offset(10)
+            //make.width.equalTo(100)
+        }
+        
+        button1.snp.makeConstraints { make in
+            make.height.equalTo(50)
+            make.centerX.equalToSuperview()
+            make.width.lessThanOrEqualToSuperview()
+        }
+        
+        button2.snp.makeConstraints { make in
+            make.height.centerX.equalTo(button1)
+            make.top.equalTo(button1.snp.bottom).offset(30)
+            make.width.lessThanOrEqualToSuperview()
+        }
+        
+    }
+    
+    private func generateButton(text: String) -> UIButton {
+        let button = UIButton(type: .roundedRect)
+        button.setTitle(text, for: .normal)
+        button.backgroundColor = .black
+        
+        return button
     }
     
     private func generateSpinner() -> UIActivityIndicatorView {
@@ -40,32 +87,87 @@ class ColorDataService {
     func getData() -> PresentableAppData {
         return repository.getData()
     }
+    
+    func getData(success: (PresentableAppData) -> (), onError: ((Error) -> ())? = nil) {
+        repository.getData(success: success, onError: onError)
+    }
 }
 
 class ColorDataRepository {
     var httpClient: HTTPClient = AssetsProvider.httpClient
     
+//    func getData() -> PresentableAppData {
+//        let data = httpClient.getData(fromUrl: AppURLS.url(forEndpoint: AppURLS.EndPoints.colorData) )
+//
+//        do {
+//            let decoder = JSONDecoder()
+//            decoder.keyDecodingStrategy = .convertFromSnakeCase
+//            let parsed = try decoder.decode(AppData.self, from: data)
+//
+//            return parsed.toPresentable() }
+//        catch {
+//            //handle parse error
+//            return PresentableAppData.identity()
+//        }
+//    }
     func getData() -> PresentableAppData {
-        let data = httpClient.getData(fromUrl: AppURLS.url(forEndpoint: AppURLS.EndPoints.colorData) )
+        let data = httpClient.getData(url: AppURLS.url(forEndpoint: AppURLS.EndPoints.colorData), modelType: AppData.self)
         
-        do {
-            let decoder = JSONDecoder()
-            decoder.keyDecodingStrategy = .convertFromSnakeCase
-            let parsed = try decoder.decode(AppData.self, from: data)
-            
-            return parsed.toPresentable() }
-        catch {
-            //handle parse error
+        guard let data = data else {
             return PresentableAppData.identity()
         }
+        
+        return PresentableAppData.fromAppData(data: data)
+    }
+    
+    func getData(success: (PresentableAppData) -> (), onError: ((Error) -> ())? = nil) {
+        httpClient.getData(url: AppURLS.url(forEndpoint: AppURLS.EndPoints.colorData),
+                           modelType: AppData.self,
+                           success: { data in success(data.toPresentable())},
+                           onError: onError)
     }
 }
 
 protocol HTTPClient {
     func getData(fromUrl urlString: String) -> Data
+    func getData<T: Decodable>(url: String, modelType: T.Type) -> T?
+    func getData<T: Decodable>(url: String,
+                               modelType: T.Type,
+                               success: (T) -> (),
+                               onError: ((Error) -> ())?)
 }
 
 class ColorDataMockHTTPClient: HTTPClient {
+    func getData<T>(url: String,
+                    modelType: T.Type,
+                    success: (T) -> (),
+                    onError: ((Error) -> ())?) where T : Decodable {
+        do {
+            let decoder = JSONDecoder()
+            decoder.keyDecodingStrategy = .convertFromSnakeCase
+            let parsed = try decoder.decode(T.self, from: Data(MockData.colorData.utf8))
+            
+            success(parsed)
+        }
+        catch {
+            //handle parse error
+            onError?(error)
+        }
+    }
+    
+    func getData<T>(url: String, modelType: T.Type) -> T? where T : Decodable {
+        do {
+            let decoder = JSONDecoder()
+            decoder.keyDecodingStrategy = .convertFromSnakeCase
+            let parsed = try decoder.decode(T.self, from: Data(MockData.colorData.utf8))
+            
+            return parsed }
+        catch {
+            //handle parse error
+            return nil
+        }
+    }
+    
     func getData(fromUrl urlString: String) -> Data {
         return Data(MockData.colorData.utf8)
     }
@@ -193,5 +295,11 @@ extension UIColor {
             blue: CGFloat(rgbValue & 0x0000FF) / 255.0,
             alpha: CGFloat(1.0)
         )
+    }
+}
+
+extension String {
+    func localize() -> String {
+        return self
     }
 }
