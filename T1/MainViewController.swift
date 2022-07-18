@@ -9,7 +9,9 @@ import UIKit
 import SnapKit
 
 class MainViewController: UIViewController {
-    var service = ColorDataService()
+    let service = ColorDataService()
+    var data: PresentableAppData?
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -19,18 +21,22 @@ class MainViewController: UIViewController {
             view.backgroundColor = data.backgroundColors[3]
             print("\(data)")
             spinner.stopAnimating()
+            self.data = data
             setupUI()
         }
     }
     
     private func setupUI() {
         let button1 = generateButton(text: "Change text color".localize())
-        let button2 = generateButton(text: "Change backgorundColor".localize())
+        let button2 = generateButton(text: "Change background color".localize())
+        
+        button1.addTarget(self, action: #selector(changeTextColor), for: .touchUpInside)
+        button2.addTarget(self, action: #selector(changeBackgroundColor), for: .touchUpInside)
         
         let buttonContainer = UIView()
         buttonContainer.backgroundColor = .cyan
         let titleLabel = UILabel()
-        titleLabel.text = "TITLE"
+        titleLabel.text = "TITLE".localize()
         
         view.addSubview(buttonContainer)
         view.addSubview(titleLabel)
@@ -57,6 +63,27 @@ class MainViewController: UIViewController {
             make.width.lessThanOrEqualToSuperview()
         }
         
+        titleLabel.snp.makeConstraints { make in
+            make.bottom.equalTo(buttonContainer.snp.top).offset(-30)
+            make.centerX.equalToSuperview()
+        }
+    }
+    
+    @objc func changeTextColor() {
+        
+    }
+    
+    @objc func changeBackgroundColor() {
+        guard let data = data else { return }
+        
+        let colorPickerVC = ColorPickerViewController()
+        colorPickerVC.setColors(colors: data.backgroundColors)
+        
+        present(colorPickerVC, animated: true)
+        
+        colorPickerVC.colorSelected = {(color) in
+            self.view.backgroundColor = color
+        }
     }
     
     private func generateButton(text: String) -> UIButton {

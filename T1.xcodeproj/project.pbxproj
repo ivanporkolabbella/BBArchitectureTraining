@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3B1AA50228858F9B0081B627 /* ColorPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B1AA50128858F9B0081B627 /* ColorPickerViewController.swift */; };
 		3B8B2A83287DA54300AB6154 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B8B2A82287DA54300AB6154 /* AppDelegate.swift */; };
 		3B8B2A87287DA54300AB6154 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B8B2A86287DA54300AB6154 /* MainViewController.swift */; };
 		3B8B2A8C287DA54400AB6154 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3B8B2A8B287DA54400AB6154 /* Assets.xcassets */; };
@@ -15,6 +16,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		3B1AA50128858F9B0081B627 /* ColorPickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPickerViewController.swift; sourceTree = "<group>"; };
 		3B8B2A7F287DA54300AB6154 /* T1.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = T1.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3B8B2A82287DA54300AB6154 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		3B8B2A86287DA54300AB6154 /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
@@ -55,6 +57,7 @@
 			isa = PBXGroup;
 			children = (
 				3B8B2A82287DA54300AB6154 /* AppDelegate.swift */,
+				3B1AA50128858F9B0081B627 /* ColorPickerViewController.swift */,
 				3B8B2A86287DA54300AB6154 /* MainViewController.swift */,
 				3B8B2A8B287DA54400AB6154 /* Assets.xcassets */,
 				3B8B2A9E287DB44100AB6154 /* Launch Screen.storyboard */,
@@ -141,6 +144,7 @@
 			files = (
 				3B8B2A87287DA54300AB6154 /* MainViewController.swift in Sources */,
 				3B8B2A83287DA54300AB6154 /* AppDelegate.swift in Sources */,
+				3B1AA50228858F9B0081B627 /* ColorPickerViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
